@@ -96,18 +96,18 @@ for i in range(1,pagination+1):
                         profile_name = re.sub("\/","",parsed.path)
                         seller_profile_name.append(profile_name)
                         seller_profile_link.append(profile['href'])
-                        print("Perfil:",profile_name)
+                        #print("Perfil:",profile_name)
                 else: 
-                        print("profile not available")
+                        #print("profile not available")
                         seller_profile_name.append('')
                         seller_profile_link.append('')
 
                 if sell_condition:
                         article_status.append(status(sell_condition))
                         article_qty.append(qty(sell_condition))
-                        print(status(sell_condition),"| Vendidos:", qty(sell_condition))
+                        #print(status(sell_condition),"| Vendidos:", qty(sell_condition))
                 else:   
-                        print("Reacondicionado")
+                        #print("Reacondicionado")
                         article_status.append('Reacondicionado')
                         article_qty.append('')
        
