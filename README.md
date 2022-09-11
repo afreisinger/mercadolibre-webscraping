@@ -15,4 +15,5 @@ $ pip install -r requirements.txt
 $ python main.py
 ```
 Al finalizar el script, se creará un archivo .csv con la información del scraping.
-Nota: La variable pagination en main.py indica la cantidad de páginas para hacer el scraping
+
+Nota: La variable pagination en main.py indica la cantidad de páginas para hacer el scraping.
