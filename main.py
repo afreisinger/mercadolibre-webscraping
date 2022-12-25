@@ -6,16 +6,21 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 import time
+import datetime
 from random import randint
 from urllib.parse import urlparse
 import re
 from functions import *
 
-path = ".\chromedriver" #Ruta del driver
+path = "./chromedriver" #Ruta del driver
 driver = webdriver.Chrome(path)
 
 url= "https://mercadolibre.com.ar"
 search = "playstation 4 pro"
+
+file_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_")+ search.replace(" ","_")+ ".csv"
+print(file_name)
+
 
 driver.get(url)
 
@@ -33,8 +38,9 @@ nav_search.clear()
 nav_search.send_keys(search)
 nav_search.send_keys(Keys.RETURN)                       
 
-pagination = driver.find_element(By.XPATH, "//div[@class='ui-search-pagination']/ul/li[2]").text
-pagination = [ int(s) for s in pagination.split() if s.isdigit()][0]
+#pagination = driver.find_element(By.XPATH, "//div[@class='ui-search-pagination']/ul/li[2]").text
+pagination = driver.find_element(By.XPATH, "//li[@class='andes-pagination__page-count']").text
+pagination = [ int(s) for s in pagination.split() if s.isdigit()][0] #todas las páginas.
 pagination = 1 # cantidad de páginas, comentar la linea para todas las páginas.
 records = []
 k=0
@@ -42,18 +48,29 @@ k=0
 start = time.time()
 for i in range(1,pagination+1):
         if i != pagination:
-                next_page_button = driver.find_element(By.XPATH, "//div[@class='ui-search-pagination']/ul/li[contains(@class, '--next')]/a")
+                #next_page_button = driver.find_element(By.XPATH, "//div[@class='ui-search-pagination']/ul/li[contains(@class, '--next')]/a")
+                next_page_button = driver.find_element_by_css_selector("a[title='Siguiente']")
         #página
         page = BeautifulSoup(driver.page_source,'html.parser')
         #título
-        title_products = driver.find_elements(By.XPATH, "//h2[@class='ui-search-item__title']")
+        #title_products = driver.find_elements(By.XPATH, "//h2[@class='ui-search-item__title']")
+        title_products = driver.find_elements_by_xpath("//h2[@class='ui-search-item__title shops__item-title']")
         title_products = [ title.text  for title in title_products ]
+        #print(len(title_products))
+        #print(title_products)
+        
         #precio
-        price_products = driver.find_elements(By.CLASS_NAME, "price-tag-fraction")
+        price_products = driver.find_elements_by_xpath("//div[@class='ui-search-price__second-line shops__price-second-line']//span[@class='price-tag ui-search-price__part shops__price-part']//span[@class='price-tag-amount']//span[2]")
         price_products = [ price.text for price in price_products  ]
+        #print(len(price_products))
+        #print(price_products)
+        
         #link
-        link_products = driver.find_elements(By.XPATH, "//div[@class='ui-search-item__group ui-search-item__group--title shops__items-group']/a[1]")
+        #link_products = driver.find_elements(By.XPATH, "//div[@class='ui-search-item__group ui-search-item__group--title shops__items-group']/a[1]")
+        link_products = driver.find_elements_by_xpath("//a[@class='ui-search-item__group__element shops__items-group-details ui-search-link']")         
         link_products = [ link.get_attribute("href") for link in link_products   ]
+        #print(len(link_products))
+        #print(link_products)
         
         j = 1 
         
@@ -156,6 +173,6 @@ human_time = ss_to_hhmmss(int(end-start))
 print("Tiempo transcurrido:", human_time)
 
 #df = df.sort_values(by=['PRICE'], ascending=[True])
-df.to_csv(r'./lista.csv', index=True, header=True, encoding='utf-8-sig')
+df.to_csv(file_name, index=False, sep=',', header=True, encoding='utf-8-sig')
 time.sleep(randint(1,3))
 driver.close
